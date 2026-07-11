@@ -11,6 +11,7 @@
 
 #include "RenderingSystem.h"
 #include "../components/CameraSingletonComponent.h"
+#include "../components/HeadTrackingSingletonComponent.h"
 #include "../components/PreviousRenderingStateSingletonComponent.h"
 #include "../components/RenderableComponent.h"
 #include "../components/RenderingContextSingletonComponent.h"
@@ -95,8 +96,18 @@ void RenderingSystem::VUpdateAssociatedComponents(const float) const
     auto& renderingContextComponent           = mWorld.GetSingletonComponent<RenderingContextSingletonComponent>();
     auto& previousRenderingStateComponent     = mWorld.GetSingletonComponent<PreviousRenderingStateSingletonComponent>();
     
-    // Calculate render-constant camera view matrix
-    cameraComponent.mViewMatrix = glm::lookAtLH(cameraComponent.mPosition, cameraComponent.mFocusPosition, cameraComponent.mUpVector);
+    // Calculate render-constant camera view matrix. Head tracking offsets the
+    // eye (focus stays on the player) so moving your head lets you look around
+    // the 3D scene -- head-coupled perspective.
+    const auto& headTrackingComponent = mWorld.GetSingletonComponent<HeadTrackingSingletonComponent>();
+    auto eyePosition = cameraComponent.mPosition;
+    if (headTrackingComponent.mEnabled)
+    {
+        eyePosition.x += headTrackingComponent.mHeadX * HEAD_LOOK_SCALE_X;
+        eyePosition.y += headTrackingComponent.mHeadY * HEAD_LOOK_SCALE_Y;
+        eyePosition.z += headTrackingComponent.mHeadZ * HEAD_LOOK_SCALE_Z;
+    }
+    cameraComponent.mViewMatrix = glm::lookAtLH(eyePosition, cameraComponent.mFocusPosition, cameraComponent.mUpVector);
     
     // Calculate the camera frustum for this frame
     cameraComponent.mFrustum = CalculateCameraFrustum(cameraComponent.mViewMatrix, cameraComponent.mProjectionMatrix);

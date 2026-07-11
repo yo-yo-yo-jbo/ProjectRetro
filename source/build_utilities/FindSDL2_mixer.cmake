@@ -45,9 +45,9 @@ find_path(SDL_MIXER_INCLUDE_DIR SDL_mixer.h
   HINTS
     ENV SDLMIXERDIR
     ENV SDLDIR
-  PATH_SUFFIXES SDL
+  PATH_SUFFIXES SDL2 SDL
                 # path suffixes to search inside ENV{SDLDIR}
-                include/SDL include/SDL12 include/SDL11 include
+                include/SDL2 include/SDL include/SDL12 include/SDL11 include
 )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)

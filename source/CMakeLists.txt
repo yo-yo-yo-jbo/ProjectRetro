@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_NAME ProjectRetro)
 project(${PROJECT_NAME})
@@ -62,5 +62,12 @@ if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 else(MSVC)
-  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
+  # Note: -Werror/-pedantic dropped for modern clang (2019 codebase warns a lot);
+  # GL_SILENCE_DEPRECATION quiets macOS OpenGL deprecation warnings.
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
+  # Modern libc++ no longer transitively includes some std headers; force-include
+  # a small prefix so the 2019 sources keep compiling without per-file edits.
+  target_compile_options(${PROJECT_NAME} PRIVATE
+    -include "${CMAKE_SOURCE_DIR}/build_utilities/modern_prefix.h")
 endif(MSVC)

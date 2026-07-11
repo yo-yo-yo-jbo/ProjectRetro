@@ -7,3 +7,6 @@ CMakeLists.txt.user
 *.pyc
 *.log
 config.rle
+
+build_local/
+project_files/

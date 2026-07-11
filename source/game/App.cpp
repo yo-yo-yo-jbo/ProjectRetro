@@ -48,6 +48,7 @@
 #include "rendering/components/WindowSingletonComponent.h"
 #include "rendering/systems/AnimationSystem.h"
 #include "rendering/systems/CameraControlSystem.h"
+#include "rendering/systems/HeadTrackingSystem.h"
 #include "rendering/systems/RenderingSystem.h"
 #include "resources/MeshUtils.h"
 #include "resources/ResourceLoadingService.h"
@@ -124,6 +125,9 @@ void App::CreateSystems()
     mWorld.AddSystem(std::make_unique<OverworldFlowControllerSystem>(mWorld));
     mWorld.AddSystem(std::make_unique<CameraControlSystem>(mWorld));
     mWorld.AddSystem(std::make_unique<MilestoneAlterationsSystem>(mWorld));
+    // Runs after CameraControlSystem (which follows the player) and before the
+    // RenderingSystem, so the fresh head offset is applied to this frame's view.
+    mWorld.AddSystem(std::make_unique<HeadTrackingSystem>(mWorld));
     mWorld.AddSystem(std::move(renderingSystem));
 }
 

@@ -127,11 +127,16 @@ std::unique_ptr<IResource> MeshLoader::VCreateAndLoadResource(const std::string&
     if (injectedTexCoordsString.length() > 0)
     {
         temp_uvs.clear();
-        const auto injectedCoordPairs = StringSplit(injectedTexCoordsString, '-');
+        const auto injectedCoordPairs = StringSplit(injectedTexCoordsString, '|');
         for (const auto injectedCoordPairString: injectedCoordPairs)
         {
             const auto injectedCoordPairSplitByComma = StringSplit(injectedCoordPairString, ',');
-            temp_uvs.push_back(glm::vec2(std::stof(injectedCoordPairSplitByComma[0]), std::stof(injectedCoordPairSplitByComma[1])));
+            if (injectedCoordPairSplitByComma.size() >= 2 &&
+                !injectedCoordPairSplitByComma[0].empty() &&
+                !injectedCoordPairSplitByComma[1].empty())
+            {
+                temp_uvs.push_back(glm::vec2(std::stof(injectedCoordPairSplitByComma[0]), std::stof(injectedCoordPairSplitByComma[1])));
+            }
         }
     }
     

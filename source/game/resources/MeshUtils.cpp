@@ -134,7 +134,10 @@ std::string CreateTexCoordInjectedModelPath
 
     for (auto i = 1U; i < texCoords.size(); ++i)
     {
-        path += "-" + std::to_string(texCoords[i].x) + "," + std::to_string(texCoords[i].y);
+        // Separate pairs with '|', not '-': a negative coordinate's own minus
+        // sign would collide with a '-' separator and yield an empty token that
+        // crashes the loader's std::stof (seen on some encounter sprites).
+        path += "|" + std::to_string(texCoords[i].x) + "," + std::to_string(texCoords[i].y);
     }
 
     path += "].obj";
